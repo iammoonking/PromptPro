@@ -13,6 +13,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Unzip source
         run: unzip -q PromptPro-Repo-Ready.zip -d src
+      - name: Apply code fixes
+        working-directory: src
+        run: |
+          F=app/src/main/java/com/promptpro/app/MainActivity.kt
+          sed -i 's/^import androidx.camera.video.AudioConfig$/import androidx.camera.view.video.AudioConfig/' $F
+          sed -i 's/-39 + (1 - sensitivity) \* 9,/-39.0 + (1 - sensitivity.toDouble()) * 9,/' $F
+          sed -i 's/floor + 7 + (1 - sensitivity) \* 9/floor + 7 + (1 - sensitivity.toDouble()) * 9/' $F
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:

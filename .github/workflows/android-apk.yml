@@ -1,0 +1,33 @@
+name: Build PromptPro APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Unzip source
+        run: unzip -q PromptPro-Repo-Ready.zip -d src
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Gradle 8.10.2
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Build debug APK
+        working-directory: src
+        run: gradle --no-daemon --stacktrace assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PromptPro-debug-apk
+          path: src/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
